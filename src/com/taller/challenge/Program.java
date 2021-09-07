@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This solution has a O(n^2) time and space complexity.
+ */
+
 class Program {
     public static List<Integer[]> fourNumberSum(int[] array, int targetSum) {
         final Map<Integer, List<Pair>> pairsSums = new HashMap<>();
