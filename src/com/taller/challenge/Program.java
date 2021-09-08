@@ -14,44 +14,47 @@ class Program {
         final Map<Integer, List<Pair>> pairsSums = new HashMap<>();
         final List<Integer[]> quadruplets = new ArrayList<>();
 
-        for (int i = 0; i < array.length - 1; i++) {
+        for (int i = 1; i < array.length - 1; i++) {
+
             for (int j = i + 1; j < array.length; j++) {
+                int currentSum = array[i] + array[j];
+                int diffToTargetSum = targetSum - currentSum;
 
-                int sum = array[i] + array[j];
-                int diff = targetSum - sum;
-
-                if (pairsSums.containsKey(diff)) {
-                    for (Pair pair : pairsSums.get(diff)) {
-                        addToQuadruplets(pair, new Pair(array[i], array[j]), quadruplets);
-                    }
-                }
+                addToQuadruplets(pairsSums, quadruplets, new Pair(array[i], array[j]), diffToTargetSum);
             }
 
+            //Only adding pairs that are 'back' from current number to avoid duplicated quadruplets in the final result
             for (int j = 0; j < i; j++) {
+                int currentSum = array[i] + array[j];
 
-                int sum = array[i] + array[j];
-                final Pair pair = new Pair(array[i], array[j]);
-
-                if (!pairsSums.containsKey(sum)) {
-                    addPairSum(pairsSums, sum, pair);
-                } else {
-                    pairsSums.get(sum).add(pair);
-                }
+                addToPairsSums(pairsSums, currentSum, new Pair(array[i], array[j]));
             }
-
         }
+
         return quadruplets;
     }
 
-    private static void addPairSum(Map<Integer, List<Pair>> pairsSums, int sum, Pair pair) {
-        final List<Pair> pairList = new ArrayList<>();
-        pairList.add(pair);
-        pairsSums.put(sum, pairList);
+    private static void addToQuadruplets(Map<Integer, List<Pair>> pairsSums, List<Integer[]> quadruplets, Pair newPair, int diffToTargetSum) {
+        if (!pairsSums.containsKey(diffToTargetSum)) {
+            return;
+        }
+
+        for (Pair pair : pairsSums.get(diffToTargetSum)) {
+            final Integer[] quadruplet = new Integer[]{pair.getFirstNumber(), pair.getSecondNumber(),
+                    newPair.getFirstNumber(), newPair.getSecondNumber()};
+
+            quadruplets.add(quadruplet);
+        }
     }
 
-    private static void addToQuadruplets(Pair firstPair, Pair secondPair, List<Integer[]> quadruplets) {
-        final Integer[] quadruplet = new Integer[]{firstPair.getFirstNumber(), firstPair.getSecondNumber(), secondPair.getFirstNumber(), secondPair.getSecondNumber()};
-        quadruplets.add(quadruplet);
+    private static void addToPairsSums(Map<Integer, List<Pair>> pairsSums, int sum, Pair pair) {
+        if (!pairsSums.containsKey(sum)) {
+            final List<Pair> pairList = new ArrayList<>();
+            pairList.add(pair);
+            pairsSums.put(sum, pairList);
+        } else {
+            pairsSums.get(sum).add(pair);
+        }
     }
 
     public static class Pair {
@@ -71,7 +74,5 @@ class Program {
         public Integer getSecondNumber() {
             return secondNumber;
         }
-
     }
-
 }
